@@ -9,46 +9,46 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
     
+    * { box-sizing: border-box; }
+
     body {
       font-family: 'Inter', sans-serif;
       background-color: #0b132b;
       color: #f8fafc;
-      overflow: hidden;
-      height: 100vh;
       margin: 0;
+      padding: 20px;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 1.5rem;
     }
 
     .slide {
       display: none;
-      opacity: 0;
-      transition: opacity 0.8s ease-in-out;
-      flex: 1;
       flex-direction: column;
-      gap: 1rem;
+      flex: 1;
+      margin-top: 15px;
+      margin-bottom: 15px;
     }
 
     .slide.active {
       display: flex;
-      opacity: 1;
     }
 
     .gold-accent { color: #c5a059; }
     .bg-gold { background-color: #c5a059; }
-    .border-gold { border-color: #c5a059; }
 
     .glass-card {
-      background: rgba(28, 37, 65, 0.85);
-      backdrop-filter: blur(12px);
+      background: rgba(28, 37, 65, 0.9);
+      backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.15);
       box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
     }
 
     .progress-bar {
-      height: 4px;
+      height: 6px;
       background: #c5a059;
       width: 0%;
       transition: width 0.1s linear;
@@ -56,123 +56,107 @@
 
     .today-highlight {
       border: 2px solid #c5a059 !important;
-      background: rgba(197, 160, 89, 0.2) !important;
+      background: rgba(197, 160, 89, 0.25) !important;
     }
   </style>
 </head>
 <body>
 
   <!-- Header -->
-  <header class="flex justify-between items-center glass-card px-8 py-4 rounded-2xl shrink-0">
+  <header class="glass-card px-6 py-3 rounded-2xl flex justify-between items-center shrink-0">
     <div class="flex items-center space-x-4">
-      <div class="bg-gold text-slate-900 font-black text-2xl w-12 h-12 rounded-xl flex items-center justify-center shadow-lg">
+      <div class="bg-gold text-slate-900 font-black text-xl w-10 h-10 rounded-xl flex items-center justify-center shadow-lg">
         R
       </div>
       <div>
-        <h1 class="text-2xl font-bold tracking-wide">Internat Schloss Hagerhof</h1>
-        <p class="text-sm text-slate-400 font-medium">Wohngruppe Remise</p>
+        <h1 class="text-xl font-bold tracking-wide">Internat Schloss Hagerhof</h1>
+        <p class="text-xs text-slate-400 font-medium">Wohngruppe Remise</p>
       </div>
     </div>
     
-    <div class="flex items-center space-x-8">
+    <div class="flex items-center space-x-6">
       <div class="text-right">
-        <div id="current-date" class="text-lg font-semibold text-slate-200"></div>
-        <div id="current-time" class="text-3xl font-black gold-accent tracking-wider"></div>
+        <div id="current-date" class="text-sm font-semibold text-slate-200"></div>
+        <div id="current-time" class="text-2xl font-black gold-accent tracking-wider"></div>
       </div>
-      <button onclick="toggleEditModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded-xl border border-slate-600 transition flex items-center space-x-2 text-sm font-semibold">
-        <i class="fa-solid fa-pen-to-square"></i>
-        <span>Bearbeiten</span>
+      <button onclick="toggleEditModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-2 rounded-xl border border-slate-600 text-xs font-semibold cursor-pointer">
+        <i class="fa-solid fa-pen-to-square"></i> Bearbeiten
       </button>
     </div>
   </header>
 
   <!-- Slide 1: Dienstplan -->
-  <main id="slide-1" class="slide active">
-    <div class="flex justify-between items-center mb-1">
-      <h2 class="text-2xl font-extrabold flex items-center space-x-3">
+  <main id="slide-1" class="slide flex-col gap-3">
+    <div class="flex justify-between items-center">
+      <h2 class="text-xl font-extrabold flex items-center space-x-2">
         <i class="fa-solid fa-user-clock gold-accent"></i>
         <span>Dienstplan der Betreuer</span>
       </h2>
-      <span class="text-sm bg-slate-800 px-3 py-1 rounded-full text-slate-400 border border-slate-700">Wochenübersicht So - Fr</span>
+      <span class="text-xs bg-slate-800 px-3 py-1 rounded-full text-slate-400 border border-slate-700">Wochenübersicht So - Fr</span>
     </div>
     <div id="roster-grid" class="grid grid-cols-6 gap-3 flex-1"></div>
   </main>
 
   <!-- Slide 2: Speiseplan -->
-  <main id="slide-2" class="slide">
-    <div class="flex justify-between items-center mb-1">
-      <h2 class="text-2xl font-extrabold flex items-center space-x-3">
+  <main id="slide-2" class="slide flex-col gap-3">
+    <div class="flex justify-between items-center">
+      <h2 class="text-xl font-extrabold flex items-center space-x-2">
         <i class="fa-solid fa-utensils gold-accent"></i>
         <span>Wochenspeiseplan</span>
       </h2>
-      <span class="text-sm bg-slate-800 px-3 py-1 rounded-full text-slate-400 border border-slate-700">Frühstück: Buffet (Brötchen, Müsli, Aufschnitt)</span>
+      <span class="text-xs bg-slate-800 px-3 py-1 rounded-full text-slate-400 border border-slate-700">Frühstück: Buffet (Brötchen, Müsli, Aufschnitt)</span>
     </div>
-    <div id="menu-grid" class="grid grid-cols-5 gap-4 flex-1"></div>
+    <div id="menu-grid" class="grid grid-cols-5 gap-3 flex-1"></div>
   </main>
 
-  <!-- Slide 3: Termine & Aktivitäten -->
-  <main id="slide-3" class="slide">
-    <div class="flex justify-between items-center mb-1">
-      <h2 class="text-2xl font-extrabold flex items-center space-x-3">
+  <!-- Slide 3: Termine -->
+  <main id="slide-3" class="slide flex-col gap-3">
+    <div class="flex justify-between items-center">
+      <h2 class="text-xl font-extrabold flex items-center space-x-2">
         <i class="fa-solid fa-calendar-star gold-accent"></i>
         <span>Wichtige Termine & Wochen-Aktivitäten</span>
       </h2>
-      <span class="text-sm bg-slate-800 px-3 py-1 rounded-full text-slate-400 border border-slate-700">Remise Vorschau</span>
+      <span class="text-xs bg-slate-800 px-3 py-1 rounded-full text-slate-400 border border-slate-700">Remise Vorschau</span>
     </div>
-    <div id="events-list" class="grid grid-cols-2 gap-4 flex-1"></div>
+    <div id="events-list" class="grid grid-cols-2 gap-3 flex-1"></div>
   </main>
 
-  <!-- Footer / Navigation -->
-  <footer class="mt-4 flex flex-col space-y-2 shrink-0">
+  <!-- Footer -->
+  <footer class="shrink-0 flex flex-col space-y-2">
     <div class="w-full bg-slate-800 rounded-full overflow-hidden">
       <div id="progress" class="progress-bar"></div>
     </div>
-    
-    <div class="flex justify-between items-center text-xs text-slate-400 px-2">
-      <div class="flex items-center space-x-4">
+    <div class="flex justify-between items-center text-xs text-slate-400 px-1">
+      <div class="flex space-x-3">
         <button onclick="prevSlide()" class="hover:text-white cursor-pointer"><i class="fa-solid fa-chevron-left"></i> Zurück</button>
         <button id="pause-btn" onclick="togglePause()" class="hover:text-white cursor-pointer"><i class="fa-solid fa-pause"></i> Pause</button>
         <button onclick="nextSlide()" class="hover:text-white cursor-pointer">Weiter <i class="fa-solid fa-chevron-right"></i></button>
       </div>
       <div id="slide-indicator" class="font-bold text-slate-300">Seite 1 von 3</div>
-      <div>Modus: Automatische Ansicht für Fernseher</div>
+      <div>TV-Ansicht Remise</div>
     </div>
   </footer>
 
-  <!-- Admin/Edit Modal -->
+  <!-- Admin Modal -->
   <div id="edit-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden items-center justify-center p-6 z-50">
     <div class="glass-card p-6 rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-slate-700 flex flex-col">
-      <div class="flex justify-between items-center mb-6">
-        <h3 class="text-xl font-bold text-white flex items-center space-x-2">
-          <i class="fa-solid fa-sliders text-gold"></i>
-          <span>Dashboard Daten Bearbeiten</span>
-        </h3>
-        <button onclick="toggleEditModal()" class="text-slate-400 hover:text-white text-2xl cursor-pointer">&times;</button>
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-bold text-white"><i class="fa-solid fa-sliders text-gold"></i> Dashboard Bearbeiten</h3>
+        <button onclick="toggleEditModal()" class="text-slate-400 hover:text-white text-xl cursor-pointer">&times;</button>
       </div>
-
-      <div class="space-y-6 flex-1 overflow-y-auto pr-2">
+      <div class="space-y-4 flex-1 overflow-y-auto pr-2">
         <div class="flex space-x-2 border-b border-slate-700 pb-2">
-          <button onclick="switchTab('tab-roster')" class="px-4 py-2 bg-slate-800 rounded-lg text-sm font-bold text-white hover:bg-slate-700 cursor-pointer">Dienstplan</button>
-          <button onclick="switchTab('tab-menu')" class="px-4 py-2 bg-slate-800 rounded-lg text-sm font-bold text-white hover:bg-slate-700 cursor-pointer">Speiseplan</button>
-          <button onclick="switchTab('tab-events')" class="px-4 py-2 bg-slate-800 rounded-lg text-sm font-bold text-white hover:bg-slate-700 cursor-pointer">Termine</button>
+          <button onclick="switchTab('tab-roster')" class="px-3 py-1.5 bg-slate-800 rounded-lg text-xs font-bold text-white cursor-pointer">Dienstplan</button>
+          <button onclick="switchTab('tab-menu')" class="px-3 py-1.5 bg-slate-800 rounded-lg text-xs font-bold text-white cursor-pointer">Speiseplan</button>
+          <button onclick="switchTab('tab-events')" class="px-3 py-1.5 bg-slate-800 rounded-lg text-xs font-bold text-white cursor-pointer">Termine</button>
         </div>
-
-        <div id="tab-roster" class="tab-content space-y-4">
-          <div id="roster-form-inputs" class="grid grid-cols-2 gap-4"></div>
-        </div>
-
-        <div id="tab-menu" class="tab-content space-y-4 hidden">
-          <div id="menu-form-inputs" class="grid grid-cols-2 gap-4"></div>
-        </div>
-
-        <div id="tab-events" class="tab-content space-y-4 hidden">
-          <div id="events-form-inputs" class="space-y-3"></div>
-        </div>
+        <div id="tab-roster" class="tab-content space-y-3"><div id="roster-form-inputs" class="grid grid-cols-2 gap-3"></div></div>
+        <div id="tab-menu" class="tab-content space-y-3 hidden"><div id="menu-form-inputs" class="grid grid-cols-2 gap-3"></div></div>
+        <div id="tab-events" class="tab-content space-y-3 hidden"><div id="events-form-inputs" class="space-y-2"></div></div>
       </div>
-
-      <div class="mt-6 flex justify-end space-x-3 pt-4 border-t border-slate-700 shrink-0">
-        <button onclick="toggleEditModal()" class="px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800 text-sm font-bold cursor-pointer">Abbrechen</button>
-        <button onclick="saveData()" class="px-6 py-2 bg-gold text-slate-900 rounded-lg text-sm font-bold hover:bg-yellow-500 transition cursor-pointer">Speichern & Aktualisieren</button>
+      <div class="mt-4 flex justify-end space-x-3 pt-3 border-t border-slate-700">
+        <button onclick="toggleEditModal()" class="px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800 text-xs font-bold cursor-pointer">Abbrechen</button>
+        <button onclick="saveData()" class="px-5 py-2 bg-gold text-slate-900 rounded-lg text-xs font-bold hover:bg-yellow-500 cursor-pointer">Speichern</button>
       </div>
     </div>
   </div>
@@ -188,26 +172,24 @@
         { day: 'Freitag', night: 'Fr. Meyer', tag1: 'Hr. Becker', tag2: 'Fr. Weber', tag3: '' }
       ],
       menu: [
-        { day: 'Montag', dinner: 'Abendbrotzeit', sub: 'Große Brotauswahl, Aufschnitt, Käse & frischer Salat' },
-        { day: 'Dienstag', dinner: 'Gekochtes Abendessen', sub: 'Warmes Hauptgericht mit Veggie-Option & Nachtisch' },
-        { day: 'Mittwoch', dinner: 'Gekochtes Abendessen', sub: 'Warmes Hauptgericht mit frischen Beilagen' },
-        { day: 'Donnerstag', dinner: 'Reste-Essen & Brotzeit', sub: 'Warme Reste-Variationen, Brotauswahl & Salat' },
-        { day: 'Freitag', dinner: 'Abreise', sub: 'Heimreise der Schüler (kein Abendessen)' }
+        { day: 'Montag', dinner: 'Abendbrotzeit', sub: 'Brotauswahl, Aufschnitt & Salat' },
+        { day: 'Dienstag', dinner: 'Gekochtes Abendessen', sub: 'Warmes Hauptgericht & Nachtisch' },
+        { day: 'Mittwoch', dinner: 'Gekochtes Abendessen', sub: 'Warmes Hauptgericht mit Beilagen' },
+        { day: 'Donnerstag', dinner: 'Reste-Essen & Brotzeit', sub: 'Warme Reste & Brotauswahl' },
+        { day: 'Freitag', dinner: 'Abreise', sub: 'Heimreise (kein Abendessen)' }
       ],
       events: [
-        { title: 'Gruppenabend Remise', time: 'Dienstag, 19:00 Uhr', desc: 'Gemeinsame Wochenbesprechung im Gemeinschaftsraum.', icon: 'fa-users' },
-        { title: 'Zimmer-Check', time: 'Mittwoch, 16:30 Uhr', desc: 'Sauberkeits- und Ordnungskontrolle aller Bewohnerzimmer.', icon: 'fa-broom' },
-        { title: 'Lernzeit / Hausaufgaben', time: 'Mo - Do, 17:00 - 18:30 Uhr', desc: 'Feste Lernphase mit Betreuer-Unterstützung.', icon: 'fa-book-open' },
-        { title: 'Wochenend-Abreise', time: 'Freitag, ab 13:30 Uhr', desc: 'Alle Schüler melden sich vor der Heimfahrt beim Dienst ab.', icon: 'fa-bus' }
+        { title: 'Gruppenabend Remise', time: 'Dienstag, 19:00', desc: 'Gemeinsame Wochenbesprechung.', icon: 'fa-users' },
+        { title: 'Zimmer-Check', time: 'Mittwoch, 16:30', desc: 'Sauberkeits- und Ordnungskontrolle.', icon: 'fa-broom' },
+        { title: 'Lernzeit / Hausaufgaben', time: 'Mo - Do, 17:00 - 18:30', desc: 'Feste Lernphase mit Betreuung.', icon: 'fa-book-open' },
+        { title: 'Wochenend-Abreise', time: 'Freitag, ab 13:30', desc: 'Abmeldung vor der Heimfahrt.', icon: 'fa-bus' }
       ]
     };
 
     let appData = JSON.parse(localStorage.getItem('hagerhof_remise_db')) || defaultData;
     let currentSlide = 1;
     const totalSlides = 3;
-    let autoSlideInterval;
-    let isPaused = false;
-    let progressTimer;
+    let autoSlideInterval, isPaused = false, progressTimer;
     const slideDuration = 12000;
 
     function init() {
@@ -221,38 +203,30 @@
 
     function updateClock() {
       const now = new Date();
-      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-      document.getElementById('current-date').innerText = now.toLocaleDateString('de-DE', options);
+      document.getElementById('current-date').innerText = now.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
       document.getElementById('current-time').innerText = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
     }
 
     function renderRoster() {
       const grid = document.getElementById('roster-grid');
-      const todayName = new Date().toLocaleDateString('de-DE', { weekday: 'long' });
-      
+      const today = new Date().toLocaleDateString('de-DE', { weekday: 'long' });
       grid.innerHTML = appData.roster.map(item => {
-        const isToday = item.day.toLowerCase() === todayName.toLowerCase();
-        let tagDienste = [item.tag1, item.tag2, item.tag3].filter(n => n && n.trim() !== '');
-        let tagHtml = tagDienste.length > 0 
-          ? tagDienste.map(n => `<div class="bg-slate-800/80 p-2 rounded-lg font-semibold text-slate-200 border border-slate-700/50 flex items-center space-x-2"><i class="fa-solid fa-sun text-amber-400 text-xs"></i><span>${n}</span></div>`).join('')
-          : `<div class="text-xs text-slate-500 italic p-1">Kein Tagdienst</div>`;
-
+        const isToday = item.day.toLowerCase() === today.toLowerCase();
+        let tags = [item.tag1, item.tag2, item.tag3].filter(n => n && n.trim() !== '');
+        let tagHtml = tags.length ? tags.map(n => `<div class="bg-slate-800 p-1.5 rounded text-xs font-semibold text-slate-200 flex items-center space-x-1"><i class="fa-solid fa-sun text-amber-400 text-[10px]"></i><span>${n}</span></div>`).join('') : '<div class="text-[10px] text-slate-500 italic">Kein Tagdienst</div>';
         return `
-          <div class="glass-card rounded-2xl p-4 flex flex-col justify-between relative overflow-hidden ${isToday ? 'today-highlight' : ''}">
-            ${isToday ? '<span class="absolute top-2 right-2 bg-gold text-slate-900 font-extrabold text-[10px] px-2 py-0.5 rounded-full">HEUTE</span>' : ''}
+          <div class="glass-card rounded-xl p-3 flex flex-col justify-between relative ${isToday ? 'today-highlight' : ''}">
+            ${isToday ? '<span class="absolute top-2 right-2 bg-gold text-slate-900 font-extrabold text-[9px] px-2 py-0.5 rounded-full">HEUTE</span>' : ''}
             <div>
-              <h3 class="font-extrabold text-lg text-white mb-3 pb-1 border-b border-slate-700/60">${item.day}</h3>
-              <div class="space-y-2">
+              <h3 class="font-extrabold text-base text-white mb-2 pb-1 border-b border-slate-700">${item.day}</h3>
+              <div class="space-y-1.5 text-xs">
                 <div>
-                  <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-300 block mb-1">Nachtdienst</span>
-                  <div class="bg-indigo-950/60 p-2 rounded-lg font-bold text-indigo-100 border border-indigo-800/50 flex items-center space-x-2">
-                    <i class="fa-solid fa-moon text-indigo-400 text-xs"></i>
-                    <span>${item.night || 'Offen'}</span>
-                  </div>
+                  <span class="text-[9px] font-bold uppercase text-indigo-300 block">Nacht</span>
+                  <div class="bg-indigo-950/70 p-1.5 rounded font-bold text-indigo-100 border border-indigo-900">${item.night || 'Offen'}</div>
                 </div>
                 <div>
-                  <span class="text-[10px] font-bold uppercase tracking-wider text-amber-300 block mb-1">Tagdienst</span>
-                  <div class="space-y-1.5">${tagHtml}</div>
+                  <span class="text-[9px] font-bold uppercase text-amber-300 block">Tag</span>
+                  <div class="space-y-1">${tagHtml}</div>
                 </div>
               </div>
             </div>
@@ -263,24 +237,23 @@
 
     function renderMenu() {
       const grid = document.getElementById('menu-grid');
-      const todayName = new Date().toLocaleDateString('de-DE', { weekday: 'long' });
-
+      const today = new Date().toLocaleDateString('de-DE', { weekday: 'long' });
       grid.innerHTML = appData.menu.map(item => {
-        const isToday = item.day.toLowerCase() === todayName.toLowerCase();
+        const isToday = item.day.toLowerCase() === today.toLowerCase();
         return `
-          <div class="glass-card rounded-2xl p-5 flex flex-col justify-between relative ${isToday ? 'today-highlight' : ''}">
-            ${isToday ? '<span class="absolute top-3 right-3 bg-gold text-slate-900 font-extrabold text-[10px] px-2.5 py-0.5 rounded-full">HEUTE</span>' : ''}
+          <div class="glass-card rounded-xl p-3 flex flex-col justify-between relative ${isToday ? 'today-highlight' : ''}">
+            ${isToday ? '<span class="absolute top-2 right-2 bg-gold text-slate-900 font-extrabold text-[9px] px-2 py-0.5 rounded-full">HEUTE</span>' : ''}
             <div>
-              <h3 class="font-bold text-xl text-white mb-4 pb-2 border-b border-slate-700/80">${item.day}</h3>
-              <div class="space-y-4">
-                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-700/40">
-                  <span class="text-xs font-semibold text-slate-400 block mb-1"><i class="fa-solid fa-sun text-amber-400 mr-1"></i> Frühstück</span>
-                  <p class="text-sm font-medium text-slate-200">Buffet (Brötchen, Müsli, Aufschnitt)</p>
+              <h3 class="font-bold text-base text-white mb-2 pb-1 border-b border-slate-700">${item.day}</h3>
+              <div class="space-y-2 text-xs">
+                <div class="bg-slate-800/40 p-2 rounded border border-slate-700/40">
+                  <span class="text-[10px] font-semibold text-slate-400 block"><i class="fa-solid fa-sun text-amber-400"></i> Frühstück</span>
+                  <p class="font-medium text-slate-200">Buffet (Brötchen, Müsli)</p>
                 </div>
-                <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700">
-                  <span class="text-xs font-semibold text-gold block mb-1"><i class="fa-solid fa-moon text-indigo-400 mr-1"></i> Abendessen</span>
-                  <p class="text-lg font-extrabold text-white mb-1">${item.dinner}</p>
-                  <p class="text-xs text-slate-300 leading-relaxed">${item.sub}</p>
+                <div class="bg-slate-800/80 p-2 rounded border border-slate-700">
+                  <span class="text-[10px] font-semibold text-gold block"><i class="fa-solid fa-moon text-indigo-400"></i> Abendessen</span>
+                  <p class="font-bold text-white text-sm">${item.dinner}</p>
+                  <p class="text-[11px] text-slate-300">${item.sub}</p>
                 </div>
               </div>
             </div>
@@ -292,16 +265,14 @@
     function renderEvents() {
       const list = document.getElementById('events-list');
       list.innerHTML = appData.events.map(ev => `
-        <div class="glass-card rounded-2xl p-6 flex items-start space-x-5 border-l-4 border-l-gold">
-          <div class="bg-gold/10 text-gold p-4 rounded-2xl text-2xl">
-            <i class="fa-solid ${ev.icon || 'fa-star'}"></i>
-          </div>
+        <div class="glass-card rounded-xl p-4 flex items-start space-x-3 border-l-4 border-l-gold">
+          <div class="bg-gold/10 text-gold p-3 rounded-xl text-lg"><i class="fa-solid ${ev.icon || 'fa-star'}"></i></div>
           <div class="flex-1">
-            <div class="flex justify-between items-center mb-1">
-              <h3 class="text-xl font-bold text-white">${ev.title}</h3>
-              <span class="text-xs font-semibold bg-slate-800 text-gold px-3 py-1 rounded-full border border-slate-700">${ev.time}</span>
+            <div class="flex justify-between items-center">
+              <h3 class="font-bold text-white text-sm">${ev.title}</h3>
+              <span class="text-[10px] font-semibold bg-slate-800 text-gold px-2 py-0.5 rounded border border-slate-700">${ev.time}</span>
             </div>
-            <p class="text-sm text-slate-300 mt-2 leading-relaxed">${ev.desc}</p>
+            <p class="text-xs text-slate-300 mt-1">${ev.desc}</p>
           </div>
         </div>
       `).join('');
@@ -315,15 +286,8 @@
       resetProgress();
     }
 
-    function nextSlide() {
-      currentSlide = currentSlide >= totalSlides ? 1 : currentSlide + 1;
-      showSlide(currentSlide);
-    }
-
-    function prevSlide() {
-      currentSlide = currentSlide <= 1 ? totalSlides : currentSlide - 1;
-      showSlide(currentSlide);
-    }
+    function nextSlide() { currentSlide = currentSlide >= totalSlides ? 1 : currentSlide + 1; showSlide(currentSlide); }
+    function prevSlide() { currentSlide = currentSlide <= 1 ? totalSlides : currentSlide - 1; showSlide(currentSlide); }
 
     function startAutoSlide() {
       clearInterval(autoSlideInterval);
@@ -333,15 +297,12 @@
 
     function resetProgress() {
       clearInterval(progressTimer);
-      const progressBar = document.getElementById('progress');
       if (isPaused) return;
-
       let start = Date.now();
       progressTimer = setInterval(() => {
-        let elapsed = Date.now() - start;
-        let percent = (elapsed / slideDuration) * 100;
-        if (percent >= 100) percent = 100;
-        progressBar.style.width = percent + '%';
+        let pct = ((Date.now() - start) / slideDuration) * 100;
+        if (pct >= 100) pct = 100;
+        document.getElementById('progress').style.width = pct + '%';
       }, 50);
     }
 
@@ -349,8 +310,7 @@
       isPaused = !isPaused;
       const btn = document.getElementById('pause-btn');
       if (isPaused) {
-        clearInterval(autoSlideInterval);
-        clearInterval(progressTimer);
+        clearInterval(autoSlideInterval); clearInterval(progressTimer);
         btn.innerHTML = '<i class="fa-solid fa-play"></i> Start';
       } else {
         startAutoSlide();
@@ -359,48 +319,42 @@
     }
 
     function toggleEditModal() {
-      const modal = document.getElementById('edit-modal');
-      modal.classList.toggle('hidden');
-      modal.classList.toggle('flex');
-      if (!modal.classList.contains('hidden')) {
-        populateForms();
-      }
+      const m = document.getElementById('edit-modal');
+      m.classList.toggle('hidden'); m.classList.toggle('flex');
+      if (!m.classList.contains('hidden')) populateForms();
     }
 
-    function switchTab(tabId) {
+    function switchTab(id) {
       document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
-      document.getElementById(tabId).classList.remove('hidden');
+      document.getElementById(id).classList.remove('hidden');
     }
 
     function populateForms() {
-      const rosterContainer = document.getElementById('roster-form-inputs');
-      rosterContainer.innerHTML = appData.roster.map((r, i) => `
-        <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700 space-y-2">
-          <h4 class="font-bold text-gold">${r.day}</h4>
-          <div><label class="text-[10px] text-slate-400 block">Nachtdienst</label><input type="text" value="${r.night}" id="r-night-${i}" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-sm text-white"></div>
-          <div><label class="text-[10px] text-slate-400 block">Tagdienst 1</label><input type="text" value="${r.tag1}" id="r-tag1-${i}" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-sm text-white"></div>
-          <div><label class="text-[10px] text-slate-400 block">Tagdienst 2</label><input type="text" value="${r.tag2}" id="r-tag2-${i}" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-sm text-white"></div>
-          <div><label class="text-[10px] text-slate-400 block">Tagdienst 3</label><input type="text" value="${r.tag3}" id="r-tag3-${i}" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-sm text-white"></div>
+      document.getElementById('roster-form-inputs').innerHTML = appData.roster.map((r, i) => `
+        <div class="bg-slate-800/60 p-2 rounded border border-slate-700 space-y-1 text-xs">
+          <span class="font-bold text-gold">${r.day}</span>
+          <input type="text" value="${r.night}" id="r-night-${i}" placeholder="Nachtdienst" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-white">
+          <input type="text" value="${r.tag1}" id="r-tag1-${i}" placeholder="Tag 1" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-white">
+          <input type="text" value="${r.tag2}" id="r-tag2-${i}" placeholder="Tag 2" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-white">
+          <input type="text" value="${r.tag3}" id="r-tag3-${i}" placeholder="Tag 3" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-white">
         </div>
       `).join('');
 
-      const menuContainer = document.getElementById('menu-form-inputs');
-      menuContainer.innerHTML = appData.menu.map((m, i) => `
-        <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700 space-y-2">
-          <h4 class="font-bold text-gold">${m.day}</h4>
-          <div><label class="text-[10px] text-slate-400 block">Abendessen</label><input type="text" value="${m.dinner}" id="m-dinner-${i}" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-sm text-white"></div>
-          <div><label class="text-[10px] text-slate-400 block">Beschreibung</label><input type="text" value="${m.sub}" id="m-sub-${i}" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-sm text-white"></div>
+      document.getElementById('menu-form-inputs').innerHTML = appData.menu.map((m, i) => `
+        <div class="bg-slate-800/60 p-2 rounded border border-slate-700 space-y-1 text-xs">
+          <span class="font-bold text-gold">${m.day}</span>
+          <input type="text" value="${m.dinner}" id="m-dinner-${i}" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-white">
+          <input type="text" value="${m.sub}" id="m-sub-${i}" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-white">
         </div>
       `).join('');
 
-      const eventsContainer = document.getElementById('events-form-inputs');
-      eventsContainer.innerHTML = appData.events.map((e, i) => `
-        <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700 space-y-2">
+      document.getElementById('events-form-inputs').innerHTML = appData.events.map((e, i) => `
+        <div class="bg-slate-800/60 p-2 rounded border border-slate-700 space-y-1 text-xs">
           <div class="grid grid-cols-2 gap-2">
-            <input type="text" value="${e.title}" id="e-title-${i}" placeholder="Titel" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-sm text-white">
-            <input type="text" value="${e.time}" id="e-time-${i}" placeholder="Zeit" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-sm text-white">
+            <input type="text" value="${e.title}" id="e-title-${i}" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-white">
+            <input type="text" value="${e.time}" id="e-time-${i}" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-white">
           </div>
-          <input type="text" value="${e.desc}" id="e-desc-${i}" placeholder="Beschreibung" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-sm text-white">
+          <input type="text" value="${e.desc}" id="e-desc-${i}" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-white">
         </div>
       `).join('');
     }
@@ -421,12 +375,8 @@
         e.time = document.getElementById(`e-time-${i}`).value;
         e.desc = document.getElementById(`e-desc-${i}`).value;
       });
-
       localStorage.setItem('hagerhof_remise_db', JSON.stringify(appData));
-      renderRoster();
-      renderMenu();
-      renderEvents();
-      toggleEditModal();
+      renderRoster(); renderMenu(); renderEvents(); toggleEditModal();
     }
 
     window.onload = init;
