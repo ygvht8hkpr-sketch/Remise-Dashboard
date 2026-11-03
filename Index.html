@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Internat Schloss Hagerhof - Remise Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0b132b;
+      color: #f8fafc;
+      overflow: hidden;
+    }
+
+    .slide {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.8s ease-in-out;
+      height: calc(100vh - 80px);
+    }
+
+    .slide.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .gold-accent {
+      color: #c5a059;
+    }
+
+    .bg-gold {
+      background-color: #c5a059;
+    }
+
+    .border-gold {
+      border-color: #c5a059;
+    }
+
+    .glass-card {
+      background: rgba(28, 37, 65, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    .progress-bar {
+      height: 4px;
+      background: #c5a059;
+      width: 0%;
+      transition: width 0.1s linear;
+    }
+
+    .today-highlight {
+      border: 2px solid #c5a059 !important;
+      background: rgba(197, 160, 89, 0.15) !important;
+    }
+
+    :focus-visible {
+      outline: 4px solid #c5a059;
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body class="h-screen flex flex-col justify-between p-6 select-none">
+
+  <!-- Header -->
+  <header class="flex justify-between items-center glass-card px-8 py-4 rounded-2xl mb-4">
+    <div class="flex items-center space-x-4">
+      <div class="bg-gold text-slate-900 font-black text-2xl w-12 h-12 rounded-xl flex items-center justify-center shadow-lg">
+        R
+      </div>
+      <div>
+        <h1 class="text-2xl font-bold tracking-wide">Internat Schloss Hagerhof</h1>
+        <p class="text-sm text-slate-400 font-medium">Wohngruppe Remise</p>
+      </div>
+    </div>
+    
+    <div class="flex items-center space-x-8">
+      <div class="text-right">
+        <div id="current-date" class="text-lg font-semibold text-slate-200"></div>
+        <div id="current-time" class="text-3xl font-black gold-accent tracking-wider"></div>
+      </div>
+      <button id="edit-btn" onclick="toggleEditModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded-xl border border-slate-600 transition flex items-center space-x-2 text-sm font-semibold">
+        <i class="fa-solid fa-pen-to-square"></i>
+        <span>Bearbeiten</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Slide 1: Dienstplan -->
+  <main id="slide-1" class="slide active flex-col space-y-4">
+    <div class="flex justify-between items-center mb-2">
+      <h2 class="text-2xl font-extrabold flex items-center space-x-3">
+        <i class="fa-solid fa-user-clock gold-accent"></i>
+        <span>Dienstplan der Betreuer</span>
+      </h2>
+      <span class="text-sm bg-slate-800 px-3 py-1 rounded-full text-slate-400 border border-slate-700">Wochenübersicht So - Fr</span>
+    </div>
+    <div id="roster-grid" class="grid grid-cols-6 gap-3 flex-1"></div>
+  </main>
+
+  <!-- Slide 2: Speiseplan -->
+  <main id="slide-2" class="slide flex-col space-y-4">
+    <div class="flex justify-between items-center mb-2">
+      <h2 class="text-2xl font-extrabold flex items-center space-x-3">
+        <i class="fa-solid fa-utensils gold-accent"></i>
+        <span>Wochenspeiseplan</span>
+      </h2>
+      <span class="text-sm bg-slate-800 px-3 py-1 rounded-full text-slate-400 border border-slate-700">Frühstück: Buffet (Brötchen, Müsli, Aufschnitt)</span>
+    </div>
+    <div id="menu-grid" class="grid grid-cols-5 gap-4 flex-1"></div>
+  </main>
+
+  <!-- Slide 3: Termine & Aktivitäten -->
+  <main id="slide-3" class="slide flex-col space-y-4">
+    <div class="flex justify-between items-center mb-2">
+      <h2 class="text-2xl font-extrabold flex items-center space-x-3">
+        <i class="fa-solid fa-calendar-star gold-accent"></i>
+        <span>Wichtige Termine & Wochen-Aktivitäten</span>
+      </h2>
+      <span class="text-sm bg-slate-800 px-3 py-1 rounded-full text-slate-400 border border-slate-700">Remise Vorschau</span>
+    </div>
+    <div id="events-list" class="grid grid-cols-2 gap-4 flex-1"></div>
+  </main>
+
+  <!-- Footer / Navigation -->
+  <footer class="mt-4 flex flex-col space-y-2">
+    <div class="w-full bg-slate-800 rounded-full overflow-hidden">
+      <div id="progress" class="progress-bar"></div>
+    </div>
+    
+    <div class="flex justify-between items-center text-xs text-slate-400 px-2">
+      <div class="flex items-center space-x-4">
+        <button onclick="prevSlide()" class="hover:text-white"><i class="fa-solid fa-chevron-left"></i> Zurück</button>
+        <button id="pause-btn" onclick="togglePause()" class="hover:text-white"><i class="fa-solid fa-pause"></i> Pause</button>
+        <button onclick="nextSlide()" class="hover:text-white">Weiter <i class="fa-solid fa-chevron-right"></i></button>
+      </div>
+      <div id="slide-indicator" class="font-bold text-slate-300">Seite 1 von 3</div>
+      <div>Steuerung: Pfeiltasten (Links/Rechts) | Vollbild: Taste 'F'</div>
+    </div>
+  </footer>
+
+  <!-- Admin/Edit Modal -->
+  <div id="edit-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden items-center justify-center p-6 z-50">
+    <div class="glass-card p-6 rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-slate-700">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-xl font-bold text-white flex items-center space-x-2">
+          <i class="fa-solid fa-sliders text-gold"></i>
+          <span>Dashboard Daten Bearbeiten</span>
+        </h3>
+        <button onclick="toggleEditModal()" class="text-slate-400 hover:text-white text-2xl">&times;</button>
+      </div>
+
+      <div class="space-y-6">
+        <!-- Tab Auswahl im Modal -->
+        <div class="flex space-x-2 border-b border-slate-700 pb-2">
+          <button onclick="switchTab('tab-roster')" class="px-4 py-2 bg-slate-800 rounded-lg text-sm font-bold text-white hover:bg-slate-700">Dienstplan</button>
+          <button onclick="switchTab('tab-menu')" class="px-4 py-2 bg-slate-800 rounded-lg text-sm font-bold text-white hover:bg-slate-700">Speiseplan</button>
+          <button onclick="switchTab('tab-events')" class="px-4 py-2 bg-slate-800 rounded-lg text-sm font-bold text-white hover:bg-slate-700">Termine</button>
+        </div>
+
+        <!-- Tab 1: Dienstplan Form -->
+        <div id="tab-roster" class="tab-content space-y-4">
+          <div id="roster-form-inputs" class="grid grid-cols-2 gap-4"></div>
+        </div>
+
+        <!-- Tab 2: Speiseplan Form -->
+        <div id="tab-menu" class="tab-content space-y-4 hidden">
+          <div id="menu-form-inputs" class="grid grid-cols-2 gap-4"></div>
+        </div>
+
+        <!-- Tab 3: Termine Form -->
+        <div id="tab-events" class="tab-content space-y-4 hidden">
+          <div id="events-form-inputs" class="space-y-3"></div>
+        </div>
+      </div>
+
+      <div class="mt-6 flex justify-end space-x-3 pt-4 border-t border-slate-700">
+        <button onclick="toggleEditModal()" class="px-4 py-2 rounded-lg text-slate-300 hover:bg-slate-800 text-sm font-bold">Abbrechen</button>
+        <button onclick="saveData()" class="px-6 py-2 bg-gold text-slate-900 rounded-lg text-sm font-bold hover:bg-yellow-500 transition">Speichern & Aktualisieren</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Standard-Datenstruktur
+    const defaultData = {
+      roster: [
+        { day: 'Sonntag', night: 'Hr. Müller', tag1: 'Fr. Weber', tag2: '', tag3: '' },
+        { day: 'Montag', night: 'Fr. Schmidt', tag1: 'Hr. Müller', tag2: 'Fr. Meyer', tag3: '' },
+        { day: 'Dienstag', night: 'Hr. Becker', tag1: 'Fr. Schmidt', tag2: 'Hr. Wagner', tag3: 'Fr. Schulz' },
+        { day: 'Mittwoch', night: 'Fr. Weber', tag1: 'Hr. Becker', tag2: 'Fr. Hoffmann', tag3: '' },
+        { day: 'Donnerstag', night: 'Hr. Müller', tag1: 'Fr. Schmidt', tag2: '', tag3: '' },
+        { day: 'Freitag', night: 'Fr. Meyer', tag1: 'Hr. Becker', tag2: 'Fr. Weber', tag3: '' }
+      ],
+      menu: [
+        { day: 'Montag', dinner: 'Abendbrotzeit', sub: 'Große Brotauswahl, Aufschnitt, Käse & frischer Salat' },
+        { day: 'Dienstag', dinner: 'Gekochtes Abendessen', sub: 'Warmes Hauptgericht mit Veggie-Option & Nachtisch' },
+        { day: 'Mittwoch', dinner: 'Gekochtes Abendessen', sub: 'Warmes Hauptgericht mit frischen Beilagen' },
+        { day: 'Donnerstag', dinner: 'Reste-Essen & Brotzeit', sub: 'Warme Reste-Variationen, Brotauswahl & Salat' },
+        { day: 'Freitag', dinner: 'Abreise', sub: 'Heimreise der Schüler (kein Abendessen)' }
+      ],
+      events: [
+        { title: 'Gruppenabend Remise', time: 'Dienstag, 19:00 Uhr', desc: 'Gemeinsame Wochenbesprechung im Gemeinschaftsraum.', icon: 'fa-users' },
+        { title: 'Zimmer-Check', time: 'Mittwoch, 16:30 Uhr', desc: 'Sauberkeits- und Ordnungskontrolle aller Bewohnerzimmer.', icon: 'fa-broom' },
+        { title: 'Lernzeit / Hausaufgaben', time: 'Mo - Do, 17:00 - 18:30 Uhr', desc: 'Feste Lernphase mit Betreuer-Unterstützung.', icon: 'fa-book-open' },
+        { title: 'Wochenend-Abreise', time: 'Freitag, ab 13:30 Uhr', desc: 'Alle Schüler melden sich vor der Heimfahrt beim Dienst ab.', icon: 'fa-bus' }
+      ]
+    };
+
+    let appData = JSON.parse(localStorage.getItem('hagerhof_remise_db')) || defaultData;
+
+    let currentSlide = 1;
+    const totalSlides = 3;
+    let autoSlideInterval;
+    let isPaused = false;
+    let progressTimer;
+    const slideDuration = 12000;
+
+    function init() {
+      updateClock();
+      setInterval(updateClock, 1000);
+      renderRoster();
+      renderMenu();
+      renderEvents();
+      startAutoSlide();
+      
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') nextSlide();
+        if (e.key === 'ArrowLeft') prevSlide();
+        if (e.key === ' ') togglePause();
+        if (e.key.toLowerCase() === 'f') toggleFullScreen();
+      });
+    }
+
+    function updateClock() {
+      const now = new Date();
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      document.getElementById('current-date').innerText = now.toLocaleDateString('de-DE', options);
+      document.getElementById('current-time').innerText = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function renderRoster() {
+      const grid = document.getElementById('roster-grid');
+      const todayName = new Date().toLocaleDateString('de-DE', { weekday: 'long' });
+      
+      grid.innerHTML = appData.roster.map(item => {
+        const isToday = item.day.toLowerCase() === todayName.toLowerCase();
+        
+        let tagDienste = [item.tag1, item.tag2, item.tag3].filter(n => n && n.trim() !== '');
+        let tagHtml = tagDienste.length > 0 
+          ? tagDienste.map(n => `<div class="bg-slate-800/80 p-2 rounded-lg font-semibold text-slate-200 border border-slate-700/50 flex items-center space-x-2"><i class="fa-solid fa-sun text-amber-400 text-xs"></i><span>${n}</span></div>`).join('')
+          : `<div class="text-xs text-slate-500 italic p-1">Kein Tagdienst eingetragen</div>`;
+
+        return `
+          <div class="glass-card rounded-2xl p-4 flex flex-col justify-between relative overflow-hidden ${isToday ? 'today-highlight' : ''}">
+            ${isToday ? '<span class="absolute top-2 right-2 bg-gold text-slate-900 font-extrabold text-[10px] px-2 py-0.5 rounded-full">HEUTE</span>' : ''}
+            <div>
+              <h3 class="font-extrabold text-lg text-white mb-3 pb-1 border-b border-slate-700/60">${item.day}</h3>
+              
+              <div class="space-y-2">
+                <div>
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-300 block mb-1">Nachtdienst (13:00-09:00)</span>
+                  <div class="bg-indigo-950/60 p-2 rounded-lg font-bold text-indigo-100 border border-indigo-800/50 flex items-center space-x-2">
+                    <i class="fa-solid fa-moon text-indigo-400 text-xs"></i>
+                    <span>${item.night || 'Nicht besetzt'}</span>
+                  </div>
+                </div>
+
+                <div>
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-amber-300 block mb-1">Tagdienst (15:30-22:00)</span>
+                  <div class="space-y-1.5">${tagHtml}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderMenu() {
+      const grid = document.getElementById('menu-grid');
+      const todayName = new Date().toLocaleDateString('de-DE', { weekday: 'long' });
+
+      grid.innerHTML = appData.menu.map(item => {
+        const isToday = item.day.toLowerCase() === todayName.toLowerCase();
+        return `
+          <div class="glass-card rounded-2xl p-5 flex flex-col justify-between relative ${isToday ? 'today-highlight' : ''}">
+            ${isToday ? '<span class="absolute top-3 right-3 bg-gold text-slate-900 font-extrabold text-[10px] px-2.5 py-0.5 rounded-full">HEUTE</span>' : ''}
+            <div>
+              <h3 class="font-bold text-xl text-white mb-4 pb-2 border-b border-slate-700/80">${item.day}</h3>
+              
+              <div class="space-y-4">
+                <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-700/40">
+                  <span class="text-xs font-semibold text-slate-400 block mb-1"><i class="fa-solid fa-sun text-amber-400 mr-1"></i> Frühstück</span>
+                  <p class="text-sm font-medium text-slate-200">Buffet (Brötchen, Müsli, Aufschnitt)</p>
+                </div>
+
+                <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700">
+                  <span class="text-xs font-semibold text-gold block mb-1"><i class="fa-solid fa-moon text-indigo-400 mr-1"></i> Abendessen</span>
+                  <p class="text-lg font-extrabold text-white mb-1">${item.dinner}</p>
+                  <p class="text-xs text-slate-300 leading-relaxed">${item.sub}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderEvents() {
+      const list = document.getElementById('events-list');
+      list.innerHTML = appData.events.map(ev => `
+        <div class="glass-card rounded-2xl p-6 flex items-start space-x-5 border-l-4 border-l-gold">
+          <div class="bg-gold/10 text-gold p-4 rounded-2xl text-2xl">
+            <i class="fa-solid ${ev.icon || 'fa-star'}"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between items-center mb-1">
+              <h3 class="text-xl font-bold text-white">${ev.title}</h3>
+              <span class="text-xs font-semibold bg-slate-800 text-gold px-3 py-1 rounded-full border border-slate-700">${ev.time}</span>
+            </div>
+            <p class="text-sm text-slate-300 mt-2 leading-relaxed">${ev.desc}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function showSlide(index) {
+      document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+      document.getElementById(`slide-${index}`).classList.add('active');
+      document.getElementById('slide-indicator').innerText = `Seite ${index} von ${totalSlides}`;
+      currentSlide = index;
+      resetProgress();
+    }
+
+    function nextSlide() {
+      currentSlide = currentSlide >= totalSlides ? 1 : currentSlide + 1;
+      showSlide(currentSlide);
+    }
+
+    function prevSlide() {
+      currentSlide = currentSlide <= 1 ? totalSlides : currentSlide - 1;
+      showSlide(currentSlide);
+    }
+
+    function startAutoSlide() {
+      clearInterval(autoSlideInterval);
+      autoSlideInterval = setInterval(nextSlide, slideDuration);
+      resetProgress();
+    }
+
+    function resetProgress() {
+      clearInterval(progressTimer);
+      const progressBar = document.getElementById('progress');
+      if (isPaused) return;
+
+      let start = Date.now();
+      progressTimer = setInterval(() => {
+        let elapsed = Date.now() - start;
+        let percent = (elapsed / slideDuration) * 100;
+        if (percent >= 100) percent = 100;
+        progressBar.style.width = percent + '%';
+      }, 50);
+    }
+
+    function togglePause() {
+      isPaused = !isPaused;
+      const btn = document.getElementById('pause-btn');
+      if (isPaused) {
+        clearInterval(autoSlideInterval);
+        clearInterval(progressTimer);
+        btn.innerHTML = '<i class="fa-solid fa-play"></i> Start';
+      } else {
+        startAutoSlide();
+        btn.innerHTML = '<i class="fa-solid fa-pause"></i> Pause';
+      }
+    }
+
+    function toggleFullScreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
+    }
+
+    function toggleEditModal() {
+      const modal = document.getElementById('edit-modal');
+      modal.classList.toggle('hidden');
+      modal.classList.toggle('flex');
+      if (!modal.classList.contains('hidden')) {
+        populateForms();
+      }
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+      document.getElementById(tabId).classList.remove('hidden');
+    }
+
+    function populateForms() {
+      // Roster Form
+      const rosterContainer = document.getElementById('roster-form-inputs');
+      rosterContainer.innerHTML = appData.roster.map((r, i) => `
+        <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700 space-y-2">
+          <h4 class="font-bold text-gold">${r.day}</h4>
+          <div>
+            <label class="text-[10px] text-slate-400 block">Nachtdienst (1 Person)</label>
+            <input type="text" value="${r.night}" id="r-night-${i}" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-sm text-white">
+          </div>
+          <div>
+            <label class="text-[10px] text-slate-400 block">Tagdienst 1</label>
+            <input type="text" value="${r.tag1}" id="r-tag1-${i}" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-sm text-white">
+          </div>
+          <div>
+            <label class="text-[10px] text-slate-400 block">Tagdienst 2</label>
+            <input type="text" value="${r.tag2}" id="r-tag2-${i}" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-sm text-white">
+          </div>
+          <div>
+            <label class="text-[10px] text-slate-400 block">Tagdienst 3</label>
+            <input type="text" value="${r.tag3}" id="r-tag3-${i}" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-sm text-white">
+          </div>
+        </div>
+      `).join('');
+
+      // Menu Form
+      const menuContainer = document.getElementById('menu-form-inputs');
+      menuContainer.innerHTML = appData.menu.map((m, i) => `
+        <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700 space-y-2">
+          <h4 class="font-bold text-gold">${m.day}</h4>
+          <div>
+            <label class="text-[10px] text-slate-400 block">Abendessen Hauptgericht</label>
+            <input type="text" value="${m.dinner}" id="m-dinner-${i}" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-sm text-white">
+          </div>
+          <div>
+            <label class="text-[10px] text-slate-400 block">Beschreibung / Beilagen</label>
+            <input type="text" value="${m.sub}" id="m-sub-${i}" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-sm text-white">
+          </div>
+        </div>
+      `).join('');
+
+      // Events Form
+      const eventsContainer = document.getElementById('events-form-inputs');
+      eventsContainer.innerHTML = appData.events.map((e, i) => `
+        <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700 space-y-2">
+          <div class="grid grid-cols-2 gap-2">
+            <input type="text" value="${e.title}" id="e-title-${i}" placeholder="Titel" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-sm text-white">
+            <input type="text" value="${e.time}" id="e-time-${i}" placeholder="Zeitangabe" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-sm text-white">
+          </div>
+          <input type="text" value="${e.desc}" id="e-desc-${i}" placeholder="Beschreibung" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-sm text-white">
+        </div>
+      `).join('');
+    }
+
+    function saveData() {
+      // Save Roster
+      appData.roster.forEach((r, i) => {
+        r.night = document.getElementById(`r-night-${i}`).value;
+        r.tag1 = document.getElementById(`r-tag1-${i}`).value;
+        r.tag2 = document.getElementById(`r-tag2-${i}`).value;
+        r.tag3 = document.getElementById(`r-tag3-${i}`).value;
+      });
+
+      // Save Menu
+      appData.menu.forEach((m, i) => {
+        m.dinner = document.getElementById(`m-dinner-${i}`).value;
+        m.sub = document.getElementById(`m-sub-${i}`).value;
+      });
+
+      // Save Events
+      appData.events.forEach((e, i) => {
+        e.title = document.getElementById(`e-title-${i}`).value;
+        e.time = document.getElementById(`e-time-${i}`).value;
+        e.desc = document.getElementById(`e-desc-${i}`).value;
+      });
+
+      localStorage.setItem('hagerhof_remise_db', JSON.stringify(appData));
+      
+      renderRoster();
+      renderMenu();
+      renderEvents();
+      toggleEditModal();
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
